@@ -66,7 +66,7 @@ contract B160966_part1{
     }
 
     modifier onlyOwner(){
-        require (msg.sender == owner);
+        require (msg.sender == owner, "You are not the owner");
         _;
     }
 
