@@ -5,11 +5,11 @@ pragma solidity >= 0.7.0 <0.9.0;
 contract B160966_part1{
 
     address payable public owner;
-    uint256 public _totalSupply; //Defaults to 0
-    string public name;
-    string public symbol;
-    uint128 public price;
-    mapping(address => uint256) public balances;
+    uint256 internal _totalSupply; //Defaults to 0
+    string internal name;
+    string internal symbol;
+    uint128 internal price;
+    mapping(address => uint256) internal balances;
 
     constructor() {
         owner = payable(msg.sender);
