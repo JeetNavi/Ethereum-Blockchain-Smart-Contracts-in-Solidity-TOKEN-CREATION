@@ -1,6 +1,6 @@
 contract B160966_part1{
 
-    address public owner;
+    address public payable owner;
     uint256 public totalSupply; // Are we supposed to make up our own value?
     string public name = "CW3Token";
     string public symbol = "CW3T";
@@ -69,4 +69,27 @@ contract B160966_part1{
 
         return true;
     }
+
+    function sell(uint256 value) public returns (bool) {
+        require (balanceOf[msg.sender] >= value);
+
+        balanceOf[msg.sender] -= value;
+        totalSupply -= value
+
+        msg.sender.transfer(value * price); //what if the contract doesnt have enough wei?? i didnt think about this yet
+
+        Sell(msg.sender, value)
+
+        return true;
+    }
+
+    function close() onlyOwner{
+        selfdestruct(owner)
+    }
+
+    function() payable external {}
+    // think about if there are any attacks in here...
+    // mayeb do revert if msg.data > 1 ?
+    //youtube: solidity tutorial fall back functuin eat the blocks shows above line and hpow to use the fallback func
+
 }
