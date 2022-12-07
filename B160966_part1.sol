@@ -1,14 +1,21 @@
-contract B160966_part1{
-    //not sure if we are supposed to put some of these fields in constuctor or if its better to just leave em here?
-    address public payable owner;
-    uint256 public totalSupply; // Are we supposed to make up our own value?
-    string public name = "CW3Token";
-    string public symbol = "CW3T";
-    uint128 public price = 600 wei; // Set it to 600 wei? //Selling and redeeming tokens are interchangable
-    mapping(address => uint256) balances;
+// SPDX-License-Identifier: GPL-3.0
 
-    constructor() public {
-        owner = msg.sender;
+pragma solidity >= 0.7.0 <0.9.0;
+
+contract B160966_part1{
+
+    address payable public owner;
+    uint256 public _totalSupply; //Defaults to 0
+    string public name;
+    string public symbol;
+    uint128 public price;
+    mapping(address => uint256) public balances;
+
+    constructor() {
+        owner = payable(msg.sender);
+        name = "CW3Token";
+        symbol = "CW3T";
+        price = 600 wei;
     }
 
     event Transfer(
@@ -27,19 +34,19 @@ contract B160966_part1{
         uint256 value
     );
 
-    function totalSupply() public view returns (uint) {
-        return totalSupply;
+    function totalSupply() public view returns (uint256) {
+        return _totalSupply;
     }
 
     function balanceOf(address addr) public view returns (uint256) {
         return balances[addr];
     }
 
-    function getName() public view returns (string){
+    function getName() public view returns (string memory){
         return name;
     }
 
-    function getSymbol() public view returns (string){
+    function getSymbol() public view returns (string memory){
         return symbol;
     }
 
@@ -47,49 +54,49 @@ contract B160966_part1{
         return price;
     }
 
-    function transfer(address to, uint256 value) public returns (bool /*success, ppl use names here so maybe do that for others too*/) {
-        require (balanceOf[msg.sender] >= value /*msgs on requires? i.e. insufficient balance*/ );
+    function transfer(address to, uint256 value) public returns (bool success) {
+        require(balances[msg.sender] >= value, "Insufficient Funds!");
 
-        balanceOf[msg.sender] -= value;
-        balanceOf[to] += value;
+        balances[msg.sender] -= value;
+        balances[to] += value;
 
-        Transfer(msg.sender, to, value);
+        emit Transfer(msg.sender, to, value);
 
         return true;
     }
 
     modifier onlyOwner(){
         require (msg.sender == owner);
+        _;
     }
 
-    function mint(address to, uint256 value) public onlyOwner returns (bool){ //how does this fail lol?
-        balanceOf[to] += value;
+    function mint(address to, uint256 value) public onlyOwner returns (bool){
+        balances[to] += value;
+        _totalSupply += value; //Not specified in specs
 
-        Mint(to, value);
+        emit Mint(to, value);
 
         return true;
     }
 
     function sell(uint256 value) public returns (bool) {
-        require (balanceOf[msg.sender] >= value);
+        require (balances[msg.sender] >= value, "You do not have that many tokens in your balance!");
 
-        balanceOf[msg.sender] -= value;
-        totalSupply -= value
+        balances[msg.sender] -= value;
+        _totalSupply -= value;
 
-        msg.sender.transfer(value * price); //what if the contract doesnt have enough wei?? i didnt think about this yet
+        payable(msg.sender).transfer(value * price); //what if the contract doesnt have enough wei?? i didnt think about this yet
 
-        Sell(msg.sender, value)
+        emit Sell(msg.sender, value);
 
         return true;
     }
 
-    function close() onlyOwner{
-        selfdestruct(owner)
+    function close() public onlyOwner{
+        selfdestruct(owner);
     }
 
-    function() payable external {}
-    // think about if there are any attacks in here...
-    // mayeb do revert if msg.data > 1 ?
-    //youtube: solidity tutorial fall back functuin eat the blocks shows above line and hpow to use the fallback func
+    fallback() external payable {}
 
+    receive() external payable {}
 }
