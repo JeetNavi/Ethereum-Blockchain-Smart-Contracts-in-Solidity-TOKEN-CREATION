@@ -1,5 +1,5 @@
 contract B160966_part1{
-
+    //not sure if we are supposed to put some of these fields in constuctor or if its better to just leave em here?
     address public payable owner;
     uint256 public totalSupply; // Are we supposed to make up our own value?
     string public name = "CW3Token";
