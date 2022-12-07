@@ -55,7 +55,7 @@ contract B160966_part1{
     }
 
     function transfer(address to, uint256 value) public returns (bool success) {
-        require(balances[msg.sender] >= value, "Insufficient Funds!");
+        require(balances[msg.sender] >= value, "Insufficient Funds");
 
         balances[msg.sender] -= value;
         balances[to] += value;
@@ -72,7 +72,7 @@ contract B160966_part1{
 
     function mint(address to, uint256 value) public onlyOwner returns (bool){
         balances[to] += value;
-        _totalSupply += value; //Not specified in specs
+        _totalSupply += value;
 
         emit Mint(to, value);
 
@@ -80,12 +80,14 @@ contract B160966_part1{
     }
 
     function sell(uint256 value) public returns (bool) {
-        require (balances[msg.sender] >= value, "You do not have that many tokens in your balance!");
+        require (balances[msg.sender] >= value, "You do not have that many tokens in your balance");
+        require (address(this).balance >= value * price, "Contract has insufficient funds");
 
         balances[msg.sender] -= value;
         _totalSupply -= value;
 
-        payable(msg.sender).transfer(value * price); //what if the contract doesnt have enough wei?? i didnt think about this yet
+        (bool sent, ) = msg.sender.call{value: (value * price)}("");
+        require(sent, "Failed to send ether into your account");
 
         emit Sell(msg.sender, value);
 
