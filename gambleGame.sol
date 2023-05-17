@@ -2,7 +2,7 @@
 
 pragma solidity >= 0.7.0 <0.9.0;
 
-contract B160966_part1{
+contract gambleGame{
 
     address payable public owner;
     uint256 internal _totalSupply; //Defaults to 0
