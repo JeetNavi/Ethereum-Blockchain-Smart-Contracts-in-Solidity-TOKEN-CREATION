@@ -2,7 +2,7 @@
 
 pragma solidity >= 0.7.0 <0.9.0;
 
-contract gambleGame{
+contract myToken{
 
     address payable public owner;
     uint256 internal _totalSupply; //Defaults to 0
@@ -13,7 +13,7 @@ contract gambleGame{
 
     constructor() {
         owner = payable(msg.sender);
-        name = "CW3Token";
+        name = "JeeToken";
         symbol = "CW3T";
         price = 600 wei;
     }
